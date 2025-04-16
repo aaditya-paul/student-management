@@ -30,8 +30,6 @@ function Redirect() {
               router.replace("/student-dashboard");
             } else if (userData.type === "teacher") {
               router.replace("/teacher-dashboard");
-            } else {
-              router.replace("/");
             }
           } else {
             console.log("No such document!");
@@ -44,7 +42,9 @@ function Redirect() {
     });
   };
   useEffect(() => {
-    getUser();
+    setTimeout(() => {
+      getUser();
+    }, 2500);
   }, []);
   return (
     <div>

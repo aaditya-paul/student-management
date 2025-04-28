@@ -21,7 +21,7 @@ function TeacherLogin() {
     }
   };
   return (
-    <div className=" text-white flex flex-col items-center justify-center h-screen bg-black/96.5">
+    <div className="  flex flex-col items-center justify-center h-screen ">
       <div className=" text-3xl">
         Teacher Login
         <span className="text-amber-300 text-3xl font-black">.</span>

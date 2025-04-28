@@ -1,6 +1,6 @@
 "use client";
-import {signInWithEmailAndPassword} from "@firebase/auth";
-import React from "react";
+import {onAuthStateChanged, signInWithEmailAndPassword} from "@firebase/auth";
+import React, {useEffect} from "react";
 import {auth, db} from "../../firebaseConfig";
 import {doc, setDoc} from "firebase/firestore";
 import {useRouter} from "next/navigation";
@@ -11,6 +11,15 @@ function AdminLogin() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
   const router = useRouter();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.replace("/redirect");
+      }
+    });
+  }, []);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -40,7 +49,7 @@ function AdminLogin() {
     }
   };
   return (
-    <div className=" text-white flex flex-col items-center justify-center h-screen bg-black/96.5">
+    <div className="  flex flex-col items-center justify-center h-screen ">
       <div className=" text-3xl">
         Admin Login
         <span className="text-amber-300 text-3xl font-black">.</span>

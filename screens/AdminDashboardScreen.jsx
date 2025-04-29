@@ -42,8 +42,8 @@ function AdminDashboardScreen() {
       });
   }, []);
   return (
-    <div>
-      <div className="p-5 w-full">
+    <div className="  p-5">
+      <div className="  w-full ">
         {/* Greetings */}
         <div className="text-white font-bold text-3xl mt-4">
           {currentTime >= 0 && currentTime < 12
@@ -106,6 +106,10 @@ function AdminDashboardScreen() {
           </div>
         </div>
       </div>
+      {/* <div className="">
+        <div className="  mt-4 text-4xl font-bold text-amber-200 ">Notices</div>
+        <div className=" w-[250px] bg-[#22252E] rounded-2xl h-full"></div>
+      </div> */}
     </div>
   );
 }

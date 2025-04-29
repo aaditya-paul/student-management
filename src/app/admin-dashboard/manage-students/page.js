@@ -111,7 +111,11 @@ function ManageStudents() {
                     Edit
                   </Link>
                   <div
-                    onClick={() => {}}
+                    onClick={() => {
+                      deleteDoc(doc(db, "students", student.email)).then(() => {
+                        window.location.reload();
+                      });
+                    }}
                     className="text-white cursor-pointer bg-[#CF3235] w-16 text-center p-2 rounded-lg"
                   >
                     Delete

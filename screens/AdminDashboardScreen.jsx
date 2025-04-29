@@ -1,13 +1,45 @@
 "use client";
 import AdminNavBar from "@/components/adminNavBar";
+import {collection, getDocs} from "@firebase/firestore";
 import Link from "next/link";
 import React, {useEffect} from "react";
+import {db} from "../firebaseConfig";
 
 function AdminDashboardScreen() {
   const [currentTime, setCurrentTime] = React.useState(null);
+  const [student, setStudents] = React.useState([]);
+  const [teacher, setTeachers] = React.useState([]);
+
   useEffect(() => {
     const currentTime = new Date().getHours();
     setCurrentTime(currentTime);
+  }, []);
+
+  useEffect(() => {
+    // get students
+    getDocs(collection(db, "students"))
+      .then((querySnapshot) => {
+        const studentList = [];
+        querySnapshot.forEach((doc) => {
+          studentList.push(doc.data());
+        });
+        setStudents(studentList);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    // get teachers
+    getDocs(collection(db, "teachers"))
+      .then((querySnapshot) => {
+        const teacherList = [];
+        querySnapshot.forEach((doc) => {
+          teacherList.push(doc.data());
+        });
+        setTeachers(teacherList);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
   return (
     <div>
@@ -27,11 +59,27 @@ function AdminDashboardScreen() {
           <div className=" flex  gap-5">
             <div className="flex flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] ">
               <div className="text-xl font-semibold">Total Students.</div>
-              <div className=" text-3xl text-amber-300 font-ubuntu">240</div>
+              <div className=" text-3xl text-amber-300 font-ubuntu">
+                {student.length ? (
+                  student.length
+                ) : (
+                  <span className=" font-mono text-lg text-amber-300/50">
+                    Please Wait.
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] ">
               <div className="text-xl font-semibold">Total Teachers.</div>
-              <div className=" text-3xl text-amber-300 font-ubuntu">12</div>
+              <div className=" text-3xl text-amber-300 font-ubuntu">
+                {teacher.length ? (
+                  teacher.length
+                ) : (
+                  <span className=" font-mono text-lg text-amber-300/50">
+                    Please Wait.
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -42,7 +90,7 @@ function AdminDashboardScreen() {
           </div>
           <div className="flex gap-5 mt-5">
             <Link
-              href={"/admin-dashboard/manage-students"}
+              href={"/admin-dashboard/manage-students/add-student"}
               className="flex flex-col items-center justify-center gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
             >
               <div className=" text-3xl text-amber-300 font-ubuntu">+</div>

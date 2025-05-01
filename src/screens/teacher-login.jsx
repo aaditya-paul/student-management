@@ -25,7 +25,7 @@ function TeacherLogin({token}) {
         const tokenSnap = await getDoc(tokenRef);
         if (tokenSnap.exists()) {
           const tokenData = tokenSnap.data();
-          if (tokenData.type === "teacher") {
+          if (tokenData.type === "teacher" && tokenData.isActive) {
             setValidToken(true);
           } else {
             setError("This link is not valid for teacher access.");
@@ -77,6 +77,21 @@ function TeacherLogin({token}) {
 
       if (validToken) {
         // If token is valid, redirect to details page
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            //  firstName: data.firstName,
+            //  lastName: data.lastName,
+            //  email,
+            //  phone: data.phone,
+            //  branch: data.branch,
+            //  image: data?.image || null,
+            //  uid: user.uid,
+            type: "teacher",
+            //  confirmed: true,
+          },
+          {merge: true}
+        );
         router.push(`/teacher/details?token=${token}&uid=${user.uid}`);
         // router.push("/redirect");
         setLoading(false);

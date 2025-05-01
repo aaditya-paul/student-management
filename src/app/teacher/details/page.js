@@ -28,19 +28,23 @@ function TeacherDetailsTokenFillup() {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        getDoc(doc(db, "users", user.uid)).then((docSnap) => {
-          console.log(docSnap);
+        getDoc(doc(db, "users", user.uid))
+          .then((docSnap) => {
+            console.log(docSnap);
 
-          if (docSnap.exists()) {
-            const userData = docSnap.data();
+            if (docSnap.exists()) {
+              const userData = docSnap.data();
 
-            if (userData.type !== "teacher") {
-              router.replace("/redirect");
+              if (userData.type !== "teacher") {
+                router.replace("/redirect");
+              }
+            } else {
+              console.log("No such document!");
             }
-          } else {
-            console.log("No such document!");
-          }
-        });
+          })
+          .then(() => {
+            setEmail(user.email);
+          });
       } else {
         router.replace("/redirect");
       }

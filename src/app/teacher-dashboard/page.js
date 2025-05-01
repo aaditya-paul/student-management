@@ -1,11 +1,15 @@
 "use client";
 import {onAuthStateChanged} from "@firebase/auth";
 import React, {useEffect} from "react";
-import {auth} from "../../../firebaseConfig";
+import {auth, db} from "../../../firebaseConfig";
 import {doc, getDoc} from "@firebase/firestore";
 import {useRouter} from "next/navigation";
+import LoadingScreen, {
+  TransparentLoadingComponent,
+} from "@/components/loadingScreen";
 
 function TeacherDashboard() {
+  const [loading, setLoading] = React.useState(true);
   const router = useRouter();
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
@@ -27,8 +31,16 @@ function TeacherDashboard() {
         console.log("User is not logged in");
       }
     });
-  }, []);
-  return <div>teacher</div>;
+    setLoading(false);
+  }, [router]);
+  if (loading) {
+    return (
+      <div className="fixed top-0 left-0 w-screen flex justify-center items-center h-screen">
+        <TransparentLoadingComponent />
+      </div>
+    );
+  }
+  return <div>teacher </div>;
 }
 
 export default TeacherDashboard;

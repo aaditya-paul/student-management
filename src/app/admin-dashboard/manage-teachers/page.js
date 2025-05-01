@@ -179,15 +179,29 @@ function ManageTeachers() {
                     </Link>
                     <div
                       onClick={() => {
+                        console.log("dsds");
+
                         if (teacher?.uid) {
                           deleteDoc(doc(db, "users", teacher?.uid)).then(() => {
                             window.location.reload();
+                            alert("Deleted Successfully");
                           });
-                        } else {
+
                           deleteDoc(
                             doc(db, "teacher-invitations", teacher.email)
                           ).then(() => {
+                            // window.location.reload();
+                          });
+                        } else {
+                          deleteDoc(doc(db, "users", teacher?.uid)).then(() => {
                             window.location.reload();
+                            alert("Deleted Successfully");
+                          });
+
+                          deleteDoc(
+                            doc(db, "teacher-invitations", teacher.email)
+                          ).then(() => {
+                            // window.location.reload();
                           });
                         }
                       }}

@@ -56,13 +56,14 @@ function AddStudents() {
     }
 
     setDoc(
-      doc(db, "students", email),
+      doc(db, "student-invitations", email),
       {
         firstName: firstName,
         lastName: lastName,
         email: email,
         phone: phone,
         branch: branch,
+        confirmed: false,
         // TODO add image to firebase storage and get the url
       },
       {merge: true}

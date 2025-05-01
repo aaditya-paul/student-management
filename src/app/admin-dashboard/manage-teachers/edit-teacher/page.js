@@ -19,10 +19,11 @@ function EditTeacher() {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const emailQ = useSearchParams().get("email");
+  // const emailQ = useSearchParams().get("email");
+  const uid = useSearchParams().get("uid");
   useEffect(() => {
     // console.log("emailQ", emailQ);
-    getDoc(doc(db, "teachers", emailQ)).then((docSnap) => {
+    getDoc(doc(db, "users", uid)).then((docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setFirstName(data.firstName);
@@ -34,7 +35,7 @@ function EditTeacher() {
         console.log("No such document!");
       }
     });
-  }, [emailQ]);
+  }, [uid]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -70,7 +71,7 @@ function EditTeacher() {
     }
 
     setDoc(
-      doc(db, "teachers", email),
+      doc(db, "users", uid),
       {
         firstName: firstName,
         lastName: lastName,
@@ -103,11 +104,15 @@ function EditTeacher() {
       });
   };
   if (loading) {
-    return <TransparentLoadingComponent />;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <TransparentLoadingComponent />
+      </div>
+    );
   }
 
   if (
-    emailQ === null ||
+    uid === null ||
     firstName === "" ||
     lastName === "" ||
     email === "" ||

@@ -11,6 +11,7 @@ function Login() {
   const router = useRouter();
   const q = useSearchParams();
   const type = q.get("type");
+  const token = q.get("token");
   // console.log(type);
   if (type === "student") {
     return (
@@ -23,7 +24,7 @@ function Login() {
     return (
       <>
         <ProtectedRoute />
-        <TeacherLogin />
+        <TeacherLogin token={token} />
       </>
     );
   } else if (type === "admin") {

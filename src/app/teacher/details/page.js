@@ -1,15 +1,18 @@
 "use client";
+import {useSearchParams} from "next/navigation";
 import Image from "next/image";
 import React, {useEffect, useState} from "react";
-import PFP from "../../../../../public/assets/user.png";
-import {
+import PFP from "../../../../public/assets/user.png";
+import LoadingScreen, {
   TransparentLoadingComponent,
   TransparentLoadingScreen,
 } from "@/components/loadingScreen";
-import {doc, getDoc, setDoc} from "@firebase/firestore";
-import {db} from "../../../../../firebaseConfig";
-import {useRouter, useSearchParams} from "next/navigation";
-function EditStudent() {
+import {doc, setDoc} from "@firebase/firestore";
+import {auth, db} from "../../../../firebaseConfig";
+import {useRouter} from "next/navigation";
+import {generateUID} from "../../../../utils/uid-generator";
+import {onAuthStateChanged} from "@firebase/auth";
+function TeacherDetailsTokenFillup() {
   const [imagePreview, setImagePreview] = useState(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -19,22 +22,26 @@ function EditStudent() {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const emailQ = useSearchParams().get("email");
+  const token = useSearchParams().get("token");
+  const uid = useSearchParams().get("uid");
+
   useEffect(() => {
-    // console.log("emailQ", emailQ);
-    getDoc(doc(db, "student-invitations", emailQ)).then((docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setFirstName(data.firstName);
-        setLastName(data.lastName);
-        setEmail(data.email);
-        setPhone(data.phone);
-        setBranch(data.branch);
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        console.log("User is logged in:", user.uid);
+
+        if (user.uid !== uid) {
+          alert("You are not authorized to access this link.");
+          router.push("/");
+        }
+
+        setEmail(user.email);
       } else {
-        console.log("No such document!");
+        alert("You are not authorized to access this link.");
+        router.push("/");
       }
     });
-  }, [emailQ]);
+  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -68,21 +75,38 @@ function EditStudent() {
       setLoading(false);
       return;
     }
-
     setDoc(
-      doc(db, "students", email),
+      doc(db, "users", uid),
       {
         firstName: firstName,
         lastName: lastName,
         email: email,
         phone: phone,
         branch: branch,
+        confirmed: true,
+        uid: uid,
+        type: "teacher",
+        // TODO add image to firebase storage and get the url
+      },
+      {merge: true}
+    );
+
+    setDoc(
+      doc(db, "teacher-invitations", email),
+      {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
+        branch: branch,
+        confirmed: true,
+        uid: uid,
         // TODO add image to firebase storage and get the url
       },
       {merge: true}
     )
       .then(() => {
-        alert("student added successfully.");
+        alert("Teacher added successfully.");
         setFirstName("");
         setLastName("");
         setEmail("");
@@ -91,11 +115,11 @@ function EditStudent() {
         setImagePreview(null);
         setImage(null);
         setLoading(false);
-        router.push("/admin-dashboard/manage-students");
+        router.push("/teacher-dashboard");
       })
       .catch((e) => {
         console.log(e);
-        alert("Error adding student. Please try again.");
+        alert("Error adding teacher. Please try again.");
         setLoading(false);
       })
       .finally(() => {
@@ -103,30 +127,20 @@ function EditStudent() {
       });
   };
   if (loading) {
-    return <TransparentLoadingComponent />;
+    return <LoadingScreen />;
   }
-
-  if (
-    emailQ === null ||
-    firstName === "" ||
-    lastName === "" ||
-    email === "" ||
-    phone === "" ||
-    branch === ""
-  ) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <TransparentLoadingScreen />
-      </div>
-    );
-  }
-
   return (
-    <div>
+    <div className=" flex justify-center items-center h-screen ">
       <div className="p-5 max-h-screen ">
         <div>
-          <h1 className="text-4xl font-bold  text-amber-300">Edit student.</h1>
-          <p className="text-sm">The admin can Edit students to the system.</p>
+          <h1 className="text-4xl font-bold  text-amber-300">
+            Complete Profile.
+          </h1>
+          <p className="text-sm">Complete profile to for further access.</p>
+          <p className="text-sm text-red-500 font-bold">
+            ⓘ Do not close this tab before submitting or else this account will
+            be jammed.
+          </p>
         </div>
         <div className=" flex md:flex-col-reverse lg:flex-row gap-5">
           <div className="flex flex-col gap-8 mt-12">
@@ -163,10 +177,11 @@ function EditStudent() {
                 </div>
                 <input
                   type="email"
+                  readOnly
                   className=" outline-none p-3 md:p-4 border-2 border-slate-700 rounded-lg mt-2 w-96"
                   placeholder="john@doe.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  //   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div>
@@ -260,4 +275,4 @@ function EditStudent() {
   );
 }
 
-export default EditStudent;
+export default TeacherDetailsTokenFillup;

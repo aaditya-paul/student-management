@@ -15,6 +15,12 @@ function Redirect() {
   const [UD, setUD] = React.useState(null);
   console.log("URL", url);
 
+  useEffect(() => {
+    setInterval(() => {
+      window.location.reload();
+    }, 5000);
+  }, []);
+
   const getUser = async () => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {

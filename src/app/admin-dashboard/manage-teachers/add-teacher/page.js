@@ -9,6 +9,7 @@ import {
 import {doc, setDoc} from "@firebase/firestore";
 import {db} from "../../../../../firebaseConfig";
 import {useRouter} from "next/navigation";
+import {generateUID} from "../../../../../utils/uid-generator";
 function AddTeacher() {
   const [imagePreview, setImagePreview] = useState(null);
   const [firstName, setFirstName] = useState("");
@@ -54,13 +55,14 @@ function AddTeacher() {
     }
 
     setDoc(
-      doc(db, "teachers", email),
+      doc(db, "teacher-invitations", email),
       {
         firstName: firstName,
         lastName: lastName,
         email: email,
         phone: phone,
         branch: branch,
+        confirmed: false,
         // TODO add image to firebase storage and get the url
       },
       {merge: true}

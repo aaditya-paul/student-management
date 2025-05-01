@@ -17,7 +17,7 @@ function AdminDashboardScreen() {
 
   useEffect(() => {
     // get students
-    getDocs(collection(db, "students"))
+    getDocs(collection(db, "student-invitations"))
       .then((querySnapshot) => {
         const studentList = [];
         querySnapshot.forEach((doc) => {
@@ -29,7 +29,7 @@ function AdminDashboardScreen() {
         console.log(error);
       });
     // get teachers
-    getDocs(collection(db, "teachers"))
+    getDocs(collection(db, "teacher-invitations"))
       .then((querySnapshot) => {
         const teacherList = [];
         querySnapshot.forEach((doc) => {

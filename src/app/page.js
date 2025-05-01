@@ -11,14 +11,14 @@ function Page() {
   return (
     <div className="">
       {/* <LoadingScreen /> */}
-      {/* <GetStarted />
+      <GetStarted />
       <div className=" -z-10">
         <Dots />
-      </div> */}
-
-      <div>
-        <LandingPage />
       </div>
+
+      {/* <div>
+        <LandingPage />
+      </div> */}
     </div>
   );
 }

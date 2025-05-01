@@ -30,7 +30,9 @@ function ManageStudents() {
   useEffect(() => {
     async function fetchStudents() {
       setLoading(true);
-      const querySnapshot = await getDocs(collection(db, "students"));
+      const querySnapshot = await getDocs(
+        collection(db, "student-invitations")
+      );
       const studentList = [];
       querySnapshot.forEach((doc) => {
         studentList.push(doc.data());
@@ -45,6 +47,16 @@ function ManageStudents() {
     <div className="p-5">
       <h1 className="text-4xl font-bold  text-amber-300">Manage Students.</h1>
       <p className="text-sm">Add/Edit/Remove Students.</p>
+      <div className="text-sm mt-5 space-y-2">
+        <div className="flex gap-3 items-center">
+          <div className="border-t-2 border-dashed border-amber-300 font-bold w-6"></div>
+          <div>Invitation Not Accepted</div>
+        </div>
+        <div className="flex gap-3 items-center">
+          <div className="border-t-2 border-amber-300 font-bold w-6"></div>
+          <div>Invitation Accepted</div>
+        </div>
+      </div>
       <div>
         <div className="p-4 mt-5">
           <div className="flex items-center justify-between mb-4 ">
@@ -56,34 +68,13 @@ function ManageStudents() {
               Add Student
             </Link>
           </div>
-          {/* <table className="min-w-full  border text-center">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-r border-b">Name</th>
-                <th className="py-2 px-4 border-r border-b">Subject</th>
-                <th className="py-2 px-4 border-r border-b">Email</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teachers.map((teacher) => (
-                <tr key={teacher.id}>
-                  <td className="py-2 px-4 border-r border-b">
-                    {teacher.name}
-                  </td>
-                  <td className="py-2 px-4 border-r border-b">
-                    {teacher.subject}
-                  </td>
-                  <td className="py-2 px-4 border-r border-b">
-                    {teacher.email}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table> */}
+
           {students.map((student, index) => (
             <div
               key={index}
-              className="flex flex-col gap-5 mb-5 border-2 border-dashed border-amber-200 rounded-xl w-full p-2"
+              className={`flex flex-col gap-5 mb-5 border-2 ${
+                student.confirmed ? "border-solid" : "border-dashed"
+              } border-amber-200 rounded-xl w-full p-2`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4 w-1/6">
@@ -112,7 +103,9 @@ function ManageStudents() {
                   </Link>
                   <div
                     onClick={() => {
-                      deleteDoc(doc(db, "students", student.email)).then(() => {
+                      deleteDoc(
+                        doc(db, "student-invitations", student.email)
+                      ).then(() => {
                         window.location.reload();
                       });
                     }}

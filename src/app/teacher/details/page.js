@@ -25,47 +25,56 @@ function TeacherDetailsTokenFillup() {
   const token = useSearchParams().get("token");
   const uid = useSearchParams().get("uid");
 
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setEmail(user.email);
-
-        getDoc(doc(db, "users", user.uid)).then((docSnap) => {
-          console.log(docSnap);
-
-          if (docSnap.exists()) {
-            const userData = docSnap.data();
-
-            if (userData.type !== "teacher") {
-              router.replace("/redirect");
-            }
-          } else {
-            console.log("No such document!");
-          }
-        });
-      } else {
-        router.replace("/redirect");
-      }
-    });
-  }, []);
-
   //   useEffect(() => {
-  //     onAuthStateChanged(auth, async (user) => {
+  //     onAuthStateChanged(auth, (user) => {
   //       if (user) {
-  //         console.log("User is logged in:", user.uid);
-
-  //         if (user.uid !== uid) {
-  //           alert("You are not authorized to access this link.");
-  //           router.push("/");
-  //         }
-
   //         setEmail(user.email);
+
+  //         getDoc(doc(db, "users", user.uid)).then((docSnap) => {
+  //           console.log(docSnap);
+
+  //           if (docSnap.exists()) {
+  //             const userData = docSnap.data();
+
+  //             if (userData.type !== "teacher") {
+  //               router.replace("/redirect");
+  //             }
+  //           } else {
+  //             console.log("No such document!");
+  //           }
+  //         });
   //       } else {
-  //         alert("You are not authorized to access this link.");
-  //         router.push("/");
+  //         router.replace("/redirect");
   //       }
   //     });
   //   }, []);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        console.log("User is logged in:", user.uid);
+        getDoc(doc(db, "users", user.uid)).then((docSnap) => {
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            console.log("User data:", userData.type);
+            // Perform any actions you need with the user data
+          } else {
+            router.push("/");
+            console.log("No such document!!!!!!!!!!!!");
+          }
+        });
+        if (user.uid !== uid) {
+          alert("You are not authorized to access this link.");
+          router.push("/");
+        }
+
+        setEmail(user.email);
+      } else {
+        alert("You are not authorized to access this link.");
+        router.push("/");
+      }
+    });
+  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];

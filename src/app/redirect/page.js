@@ -7,6 +7,7 @@ import {setUserRedux} from "@/lib/redux/features/auth";
 import {doc, getDoc} from "@firebase/firestore";
 import {useDispatch} from "react-redux";
 import LoadingScreen from "@/components/loadingScreen";
+import {fetchUser, fetchUserData} from "../../../utils/fetchUserFunctions";
 
 function Redirect() {
   const router = useRouter();
@@ -47,6 +48,21 @@ function Redirect() {
       }
     });
   };
+  //  TODO implement it later
+  // const getUser = async () => {
+  //   const user = await fetchUser();
+  //   const userDetails = await fetchUserData(user.uid);
+  //   dispatch(setUserRedux(userDetails));
+  //   setUD(userDetails);
+  //   if (userDetails.type === "admin") {
+  //     router.replace("/admin-dashboard");
+  //   } else if (userDetails.type === "student") {
+  //     router.replace("/student-dashboard");
+  //   } else if (userDetails.type === "teacher") {
+  //     router.replace("/teacher-dashboard");
+  //   }
+  // };
+
   useEffect(() => {
     setTimeout(() => {
       getUser();

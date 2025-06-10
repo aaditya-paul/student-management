@@ -12,6 +12,8 @@ import {auth, db} from "../../../../firebaseConfig";
 import {useRouter} from "next/navigation";
 import {generateUID} from "../../../../utils/uid-generator";
 import {onAuthStateChanged} from "@firebase/auth";
+import {fetchSubjects} from "../../../../utils/fetchUserFunctions";
+import BRANCHES from "../../../../branch.json";
 function TeacherDetailsTokenFillup() {
   const [imagePreview, setImagePreview] = useState(null);
   const [firstName, setFirstName] = useState("");
@@ -21,9 +23,23 @@ function TeacherDetailsTokenFillup() {
   const [branch, setBranch] = useState("");
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [subDropDown, setSubDropDown] = useState(false);
+  const [subjects, setSubjects] = useState([]);
+  const [selectedSubjects, setSelectedSubjects] = useState([]);
+
   const router = useRouter();
   const token = useSearchParams().get("token");
   const uid = useSearchParams().get("uid");
+
+  useEffect(() => {
+    const fetchSub = async () => {
+      fetchSubjects().then((data) => {
+        // console.log("Subjects fetched: ", data);
+        setSubjects(data);
+      });
+    };
+    fetchSub();
+  }, []);
 
   //   useEffect(() => {
   //     onAuthStateChanged(auth, (user) => {
@@ -48,7 +64,7 @@ function TeacherDetailsTokenFillup() {
   //       }
   //     });
   //   }, []);
-
+  // TODO CHANGE THIS LATER TO MODULE
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -119,6 +135,7 @@ function TeacherDetailsTokenFillup() {
         confirmed: true,
         uid: uid,
         type: "teacher",
+        subjects: selectedSubjects,
         // TODO add image to firebase storage and get the url
       },
       {merge: true}
@@ -241,26 +258,88 @@ function TeacherDetailsTokenFillup() {
                   className="outline-none bg-[#090C15] p-3 text-gray-400 md:p-4 border-2 border-slate-700 rounded-lg mt-2 w-96"
                 >
                   <option value="">Select Branch/Subject</option>
-                  <option value="CSE">Computer Science (CSE)</option>
+                  {/* <option value="CSE">Computer Science (CSE)</option>
                   <option value="ECE">Electronics (ECE)</option>
                   <option value="ME">Mechanical (ME)</option>
                   <option value="CE">Civil (CE)</option>
                   <option value="EE">Electrical (EE)</option>
                   <option value="Math">Mathematics</option>
                   <option value="Physics">Physics</option>
-                  <option value="Chemistry">Chemistry</option>
+                  <option value="Chemistry">Chemistry</option> */}
+                  {BRANCHES.map((branch, index) => (
+                    <option key={index} value={branch.value}>
+                      {branch.label}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>
-                <div className="text-gray-400 text-xl  font-semibold p-4 bg-transparent">
-                  {/* Submit */}
+                <div className="text-gray-400 text-xl font-semibold">
+                  Subjects
                 </div>
-                <div
-                  onClick={handleSubmit}
-                  className="text-white w-96 text-xl cursor-pointer active:scale-95 transition-all ease-linear font-semibold p-4 rounded-lg text-center bg-[#D03035]"
+                <button
+                  onClick={() => {
+                    setSubDropDown(!subDropDown);
+                  }}
+                  className="outline-none cursor-pointer bg-[#090C15] p-3 text-gray-400 md:p-4 border-2 border-slate-700 rounded-lg mt-2 w-96"
                 >
-                  Submit
-                </div>
+                  <div className="flex items-center justify-between">
+                    <span>
+                      {selectedSubjects.length > 0
+                        ? selectedSubjects.join(", ").toUpperCase()
+                        : "Choose Subjects"}
+                    </span>
+                    <span>▼</span>
+                  </div>
+                </button>
+                {subDropDown && (
+                  <div className="min-h-[100px] bg-gray-900 max-h-[200px] overflow-y-auto absolute w-96 mt-2 rounded-lg p-4">
+                    {subjects.length > 0 ? (
+                      <ul>
+                        {subjects.map((subject, index) => (
+                          <li
+                            key={index}
+                            className="p-2 hover:bg-gray-800 cursor-pointer"
+                            onClick={() => {
+                              if (selectedSubjects.includes(subject)) {
+                                setSelectedSubjects(
+                                  selectedSubjects.filter(
+                                    (sub) => sub !== subject
+                                  )
+                                );
+                              } else {
+                                setSelectedSubjects([
+                                  ...selectedSubjects,
+                                  subject,
+                                ]);
+                              }
+                            }}
+                          >
+                            <div className="flex items-center justify-between ">
+                              {subject.toUpperCase()}
+                              {selectedSubjects.includes(subject) && (
+                                <span className="ml-2 text-green-500">✓</span>
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="p-2">No subjects found</div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div>
+              <div className="text-gray-400 text-xl  font-semibold p-4 bg-transparent">
+                {/* Submit */}
+              </div>
+              <div
+                onClick={handleSubmit}
+                className="text-white w-96 text-xl cursor-pointer active:scale-95 transition-all ease-linear font-semibold p-4 rounded-lg text-center bg-[#D03035]"
+              >
+                Submit
               </div>
             </div>
           </div>

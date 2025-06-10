@@ -1,18 +1,22 @@
 "use client";
 import Image from "next/image";
 import React, {useEffect, useState} from "react";
-import PFP from "../../../../../public/assets/user.png";
+import PFP from "../public/assets/user.png";
 import {
   TransparentLoadingComponent,
   TransparentLoadingScreen,
 } from "@/components/loadingScreen";
-import {doc, setDoc} from "@firebase/firestore";
-import {db} from "../../../../../firebaseConfig";
-import {useRouter} from "next/navigation";
-import {generateUID} from "../../../../../utils/uid-generator";
-import {fetchSubjects} from "../../../../../utils/fetchUserFunctions";
-import BRANCHES from "../../../../../branch.json";
-function AddTeacher() {
+import {doc, getDoc, setDoc} from "@firebase/firestore";
+import {db} from "../firebaseConfig";
+import {useRouter, useSearchParams} from "next/navigation";
+import {fetchSubjects} from "../utils/fetchUserFunctions";
+import BRANCHES from "../branch.json";
+function EditTeacher({type}) {
+  if (type === "") {
+    throw new Error("Type is required");
+  } else if (type !== "admin" && type !== "teacher") {
+    throw new Error("Type must be either 'admin' or 'teacher'");
+  }
   const [imagePreview, setImagePreview] = useState(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -24,10 +28,19 @@ function AddTeacher() {
   const [subDropDown, setSubDropDown] = useState(false);
   const [subjects, setSubjects] = useState([]);
   const [selectedSubjects, setSelectedSubjects] = useState([]);
-  // const [subjects, setSubjects] = useState([]);
-  // const [showSubjectDropdown, setShowSubjectDropdown] = useState(false);
-
+  const [environment, setEnvironment] = useState();
   const router = useRouter();
+  // const emailQ = useSearchParams().get("email");
+
+  const uid = useSearchParams().get("uid");
+
+  useEffect(() => {
+    if (type === "teacher") {
+      setEnvironment("teacher-dashboard");
+    } else if (type === "admin") {
+      setEnvironment("admin-dashboard");
+    }
+  }, [type]);
 
   useEffect(() => {
     const fetchSub = async () => {
@@ -38,6 +51,23 @@ function AddTeacher() {
     };
     fetchSub();
   }, []);
+
+  useEffect(() => {
+    // console.log("emailQ", emailQ);
+    getDoc(doc(db, "users", uid)).then((docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setFirstName(data.firstName);
+        setLastName(data.lastName);
+        setEmail(data.email);
+        setPhone(data.phone);
+        setBranch(data.branch);
+        setSelectedSubjects(data.subjects || []);
+      } else {
+        console.log("No such document!");
+      }
+    });
+  }, [uid]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -73,14 +103,13 @@ function AddTeacher() {
     }
 
     setDoc(
-      doc(db, "teacher-invitations", email),
+      doc(db, "users", uid),
       {
         firstName: firstName,
         lastName: lastName,
         email: email,
         phone: phone,
         branch: branch,
-        confirmed: false,
         subjects: selectedSubjects,
         // TODO add image to firebase storage and get the url
       },
@@ -96,9 +125,11 @@ function AddTeacher() {
         setImagePreview(null);
         setImage(null);
         setLoading(false);
-        setSelectedSubjects([]);
-        setSubDropDown(false);
-        router.push("/admin-dashboard/manage-teachers");
+        if (type === "teacher") {
+          router.back();
+        } else {
+          router.push(`/admin-dashboard/manage-teachers`);
+        }
       })
       .catch((e) => {
         console.log(e);
@@ -109,15 +140,35 @@ function AddTeacher() {
         setLoading(false);
       });
   };
-  if (loading || subjects.length === 0) {
-    return <TransparentLoadingComponent />;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <TransparentLoadingComponent />
+      </div>
+    );
   }
+
+  if (
+    uid === null ||
+    firstName === "" ||
+    lastName === "" ||
+    email === "" ||
+    phone === "" ||
+    branch === ""
+  ) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <TransparentLoadingScreen />
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="p-5 max-h-screen ">
         <div>
-          <h1 className="text-4xl font-bold  text-amber-300">Add Teacher.</h1>
-          <p className="text-sm">The admin can add teachers to the system.</p>
+          <h1 className="text-4xl font-bold  text-amber-300">Edit Teacher.</h1>
+          <p className="text-sm">The admin can Edit teachers to the system.</p>
         </div>
         <div className=" flex md:flex-col-reverse lg:flex-row gap-5">
           <div className="flex flex-col gap-8 mt-12">
@@ -314,4 +365,4 @@ function AddTeacher() {
   );
 }
 
-export default AddTeacher;
+export default EditTeacher;

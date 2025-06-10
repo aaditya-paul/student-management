@@ -11,6 +11,7 @@ function AdminLogin() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
   const router = useRouter();
+  // TODO CHANGE THIS LATER TO MODULE
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -35,6 +36,27 @@ function AdminLogin() {
             uid: user.user.uid,
             admin: true,
             type: "admin",
+            // TODO TIMETABLE CHANGE IF NEEDEED
+            slots: [
+              "10.30 AM",
+              "11.30 AM",
+              "12.30 PM",
+              "1.30 PM",
+              "2.30 PM",
+              "3.30 PM",
+              "4.30 PM",
+              "5.30 PM",
+            ],
+            days: [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+            ],
+            subjects: ["Maths"],
+            timetable: [],
           },
           {merge: true}
         );

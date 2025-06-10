@@ -1,18 +1,19 @@
 "use client";
+import {useSearchParams} from "next/navigation";
 import Image from "next/image";
 import React, {useEffect, useState} from "react";
-import PFP from "../../../../../public/assets/user.png";
-import {
+import PFP from "../../../../public/assets/user.png";
+import LoadingScreen, {
   TransparentLoadingComponent,
   TransparentLoadingScreen,
 } from "@/components/loadingScreen";
-import {doc, setDoc} from "@firebase/firestore";
-import {db} from "../../../../../firebaseConfig";
+import {doc, getDoc, setDoc} from "@firebase/firestore";
+import {auth, db} from "../../../../firebaseConfig";
 import {useRouter} from "next/navigation";
-import {generateUID} from "../../../../../utils/uid-generator";
-import {fetchSubjects} from "../../../../../utils/fetchUserFunctions";
-import BRANCHES from "../../../../../branch.json";
-function AddTeacher() {
+import {generateUID} from "../../../../utils/uid-generator";
+import {onAuthStateChanged} from "@firebase/auth";
+import BRANCHES from "../../../../branch.json";
+function StudentDetailsTokenFillup() {
   const [imagePreview, setImagePreview] = useState(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -21,22 +22,59 @@ function AddTeacher() {
   const [branch, setBranch] = useState("");
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [subDropDown, setSubDropDown] = useState(false);
-  const [subjects, setSubjects] = useState([]);
-  const [selectedSubjects, setSelectedSubjects] = useState([]);
-  // const [subjects, setSubjects] = useState([]);
-  // const [showSubjectDropdown, setShowSubjectDropdown] = useState(false);
-
   const router = useRouter();
+  const token = useSearchParams().get("token");
+  const uid = useSearchParams().get("uid");
 
+  //   useEffect(() => {
+  //     onAuthStateChanged(auth, (user) => {
+  //       if (user) {
+  //         setEmail(user.email);
+
+  //         getDoc(doc(db, "users", user.uid)).then((docSnap) => {
+  //           console.log(docSnap);
+
+  //           if (docSnap.exists()) {
+  //             const userData = docSnap.data();
+
+  //             if (userData.type !== "teacher") {
+  //               router.replace("/redirect");
+  //             }
+  //           } else {
+  //             console.log("No such document!");
+  //           }
+  //         });
+  //       } else {
+  //         router.replace("/redirect");
+  //       }
+  //     });
+  //   }, []);
+  // TODO CHANGE THIS LATER TO MODULE
   useEffect(() => {
-    const fetchSub = async () => {
-      fetchSubjects().then((data) => {
-        // console.log("Subjects fetched: ", data);
-        setSubjects(data);
-      });
-    };
-    fetchSub();
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        console.log("User is logged in:", user.uid);
+        getDoc(doc(db, "users", user.uid)).then((docSnap) => {
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            console.log("User data:", userData.type);
+            // Perform any actions you need with the user data
+          } else {
+            router.push("/");
+            console.log("No such document!!!!!!!!!!!!");
+          }
+        });
+        if (user.uid !== uid) {
+          alert("You are not authorized to access this link.");
+          router.push("/");
+        }
+
+        setEmail(user.email);
+      } else {
+        alert("You are not authorized to access this link.");
+        router.push("/");
+      }
+    });
   }, []);
 
   const handleImageChange = (e) => {
@@ -71,23 +109,38 @@ function AddTeacher() {
       setLoading(false);
       return;
     }
-
     setDoc(
-      doc(db, "teacher-invitations", email),
+      doc(db, "users", uid),
       {
         firstName: firstName,
         lastName: lastName,
         email: email,
         phone: phone,
         branch: branch,
-        confirmed: false,
-        subjects: selectedSubjects,
+        confirmed: true,
+        uid: uid,
+        type: "student",
+        // TODO add image to firebase storage and get the url
+      },
+      {merge: true}
+    );
+
+    setDoc(
+      doc(db, "student-invitations", email),
+      {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
+        branch: branch,
+        confirmed: true,
+        uid: uid,
         // TODO add image to firebase storage and get the url
       },
       {merge: true}
     )
       .then(() => {
-        alert("Teacher added successfully.");
+        alert("Student added successfully.");
         setFirstName("");
         setLastName("");
         setEmail("");
@@ -96,28 +149,32 @@ function AddTeacher() {
         setImagePreview(null);
         setImage(null);
         setLoading(false);
-        setSelectedSubjects([]);
-        setSubDropDown(false);
-        router.push("/admin-dashboard/manage-teachers");
+        router.push("/student-dashboard");
       })
       .catch((e) => {
         console.log(e);
-        alert("Error adding teacher. Please try again.");
+        alert("Error adding student. Please try again.");
         setLoading(false);
       })
       .finally(() => {
         setLoading(false);
       });
   };
-  if (loading || subjects.length === 0) {
-    return <TransparentLoadingComponent />;
+  if (loading) {
+    return <LoadingScreen />;
   }
   return (
-    <div>
+    <div className=" flex justify-center items-center h-screen ">
       <div className="p-5 max-h-screen ">
         <div>
-          <h1 className="text-4xl font-bold  text-amber-300">Add Teacher.</h1>
-          <p className="text-sm">The admin can add teachers to the system.</p>
+          <h1 className="text-4xl font-bold  text-amber-300">
+            Complete Profile.
+          </h1>
+          <p className="text-sm">Complete profile to for further access.</p>
+          <p className="text-sm text-red-500 font-bold">
+            ⓘ Do not close this tab before submitting or else this account will
+            be jammed.
+          </p>
         </div>
         <div className=" flex md:flex-col-reverse lg:flex-row gap-5">
           <div className="flex flex-col gap-8 mt-12">
@@ -154,10 +211,11 @@ function AddTeacher() {
                 </div>
                 <input
                   type="email"
+                  readOnly
                   className=" outline-none p-3 md:p-4 border-2 border-slate-700 rounded-lg mt-2 w-96"
                   placeholder="john@doe.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  //   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div>
@@ -192,6 +250,7 @@ function AddTeacher() {
                   <option value="Math">Mathematics</option>
                   <option value="Physics">Physics</option>
                   <option value="Chemistry">Chemistry</option> */}
+
                   {BRANCHES.map((branch, index) => (
                     <option key={index} value={branch.value}>
                       {branch.label}
@@ -199,74 +258,16 @@ function AddTeacher() {
                   ))}
                 </select>
               </div>
-
               <div>
-                <div className="text-gray-400 text-xl font-semibold">
-                  Subjects
+                <div className="text-gray-400 text-xl  font-semibold p-4 bg-transparent">
+                  {/* Submit */}
                 </div>
-                <button
-                  onClick={() => {
-                    setSubDropDown(!subDropDown);
-                  }}
-                  className="outline-none cursor-pointer bg-[#090C15] p-3 text-gray-400 md:p-4 border-2 border-slate-700 rounded-lg mt-2 w-96"
+                <div
+                  onClick={handleSubmit}
+                  className="text-white w-96 text-xl cursor-pointer active:scale-95 transition-all ease-linear font-semibold p-4 rounded-lg text-center bg-[#D03035]"
                 >
-                  <div className="flex items-center justify-between">
-                    <span>
-                      {selectedSubjects.length > 0
-                        ? selectedSubjects.join(", ").toUpperCase()
-                        : "Choose Subjects"}
-                    </span>
-                    <span>▼</span>
-                  </div>
-                </button>
-                {subDropDown && (
-                  <div className="min-h-[100px] bg-gray-900 max-h-[200px] overflow-y-auto absolute w-96 mt-2 rounded-lg p-4">
-                    {subjects.length > 0 ? (
-                      <ul>
-                        {subjects.map((subject, index) => (
-                          <li
-                            key={index}
-                            className="p-2 hover:bg-gray-800 cursor-pointer"
-                            onClick={() => {
-                              if (selectedSubjects.includes(subject)) {
-                                setSelectedSubjects(
-                                  selectedSubjects.filter(
-                                    (sub) => sub !== subject
-                                  )
-                                );
-                              } else {
-                                setSelectedSubjects([
-                                  ...selectedSubjects,
-                                  subject,
-                                ]);
-                              }
-                            }}
-                          >
-                            <div className="flex items-center justify-between ">
-                              {subject.toUpperCase()}
-                              {selectedSubjects.includes(subject) && (
-                                <span className="ml-2 text-green-500">✓</span>
-                              )}
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <div className="p-2">No subjects found</div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-            <div>
-              <div className="text-gray-400 text-xl  font-semibold p-4 bg-transparent">
-                {/* Submit */}
-              </div>
-              <div
-                onClick={handleSubmit}
-                className="text-white w-96 text-xl cursor-pointer active:scale-95 transition-all ease-linear font-semibold p-4 rounded-lg text-center bg-[#D03035]"
-              >
-                Submit
+                  Submit
+                </div>
               </div>
             </div>
           </div>
@@ -314,4 +315,4 @@ function AddTeacher() {
   );
 }
 
-export default AddTeacher;
+export default StudentDetailsTokenFillup;

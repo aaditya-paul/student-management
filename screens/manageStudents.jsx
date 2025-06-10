@@ -2,57 +2,55 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, {useEffect} from "react";
-import PFP from "../../../../public/assets/user.png";
+import PFP from "../public/assets/user.png";
 import {collection, deleteDoc, doc, getDoc, getDocs} from "@firebase/firestore";
-import {db} from "../../../../firebaseConfig";
+import {db} from "../firebaseConfig";
 import Modal from "@/components/modal";
 import {TransparentLoadingComponent} from "@/components/loadingScreen";
-function ManageTeachers() {
-  const [teachers, setTeachers] = React.useState([]);
+
+function ManageStudents({type}) {
+  const [environment, setEnvironment] = React.useState(type);
+  if (type === "") {
+    throw new Error("Type is required");
+  } else if (type !== "admin" && type !== "teacher") {
+    throw new Error("Type must be either 'admin' or 'teacher'");
+  }
+
+  //   const teachers = [
+
+  //     {
+  //       id: "abc123",
+  //       name: "John Doe",
+  //       subject: "Mathematics",
+  //       email: "john@example.com",
+  //     },
+  //     {
+  //       id: "def456",
+  //       name: "Jane Smith",
+  //       subject: "Physics",
+  //       email: "jane@example.com",
+  //     },
+  //     //   ...
+  //   ];
+
+  const [students, setStudents] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [confirmDelete, setConfirmDelete] = React.useState(false);
-  // useEffect(() => {
-  //   async function fetchTeachers() {
-  //     setLoading(true);
-  //     const querySnapshot = await getDocs(
-  //       collection(db, "teacher-invitations")
-  //     );
-  //     const teacherList = [];
-
-  //     // Loop through each invitation
-  //     for (const docSnap of querySnapshot.docs) {
-  //       const invitationData = docSnap.data();
-
-  //       if (invitationData.confirmed && invitationData.uid) {
-  //         // Fetch full user data from users collection
-  //         const userRef = doc(db, "users", invitationData.uid);
-  //         const userSnap = await getDoc(userRef);
-  //         // const userSnap = await userRef.getD();
-
-  //         if (userSnap.exists()) {
-  //           teacherList.push({...userSnap.data(), uid: invitationData.uid});
-  //         }
-  //       } else {
-  //         // Use invitation data directly
-  //         teacherList.push({...invitationData});
-  //       }
-  //     }
-
-  //     setTeachers(teacherList);
-  //     setLoading(false);
-  //   }
-
-  //   fetchTeachers();
-  // }, []);
-
   useEffect(() => {
-    async function fetchTeachers() {
+    if (type === "teacher") {
+      setEnvironment("teacher-dashboard");
+    } else if (type === "admin") {
+      setEnvironment("admin-dashboard");
+    }
+  }, [environment]);
+  useEffect(() => {
+    async function fetchStudents() {
       setLoading(true);
       const querySnapshot = await getDocs(
-        collection(db, "teacher-invitations")
+        collection(db, "student-invitations")
       );
 
-      const teacherPromises = querySnapshot.docs.map(async (docSnap) => {
+      const studentPromises = querySnapshot.docs.map(async (docSnap) => {
         const invitationData = docSnap.data();
 
         if (invitationData.confirmed && invitationData.uid) {
@@ -67,17 +65,17 @@ function ManageTeachers() {
         return {...invitationData};
       });
 
-      const teacherList = await Promise.all(teacherPromises);
-      setTeachers(teacherList);
+      const studentList = await Promise.all(studentPromises);
+      setStudents(studentList);
       setLoading(false);
     }
 
-    fetchTeachers();
+    fetchStudents();
   }, []);
   return (
     <div className="p-5">
-      <h1 className="text-4xl font-bold  text-amber-300">Manage Teachers.</h1>
-      <p className="text-sm">Add/Edit/Remove Teachers.</p>
+      <h1 className="text-4xl font-bold  text-amber-300">Manage Students.</h1>
+      <p className="text-sm">Add/Edit/Remove Students.</p>
       <div className="text-sm mt-5 space-y-2">
         <div className="flex gap-3 items-center">
           <div className="border-t-2 border-dashed border-amber-300 font-bold w-6"></div>
@@ -91,56 +89,32 @@ function ManageTeachers() {
       <div>
         <div className="p-4 mt-5">
           <div className="flex items-center justify-between mb-4 ">
-            <h1 className="text-2xl font-bold mb-4">Teachers List</h1>
+            <h1 className="text-2xl font-bold mb-4">Student List</h1>
             <div className=" flex gap-3 items-center">
               <Link
-                href={"/admin-dashboard/invitations"}
+                href={`/${environment}/invitations`}
                 className=" p-3 cursor-pointer active:scale-95 transition-all bg-green-500 font-bold rounded-xl"
               >
                 Invite Using Link
               </Link>
               <Link
-                href={"/admin-dashboard/manage-teachers/add-teacher"}
+                href={`/${environment}/manage-students/add-student`}
                 className=" p-3 cursor-pointer active:scale-95 transition-all bg-[#CF3235] font-bold rounded-xl"
               >
-                Add Teacher
+                Add Student
               </Link>
             </div>
           </div>
-          {/* <table className="min-w-full  border text-center">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-r border-b">Name</th>
-                <th className="py-2 px-4 border-r border-b">Subject</th>
-                <th className="py-2 px-4 border-r border-b">Email</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teachers.map((teacher) => (
-                <tr key={teacher.id}>
-                  <td className="py-2 px-4 border-r border-b">
-                    {teacher.name}
-                  </td>
-                  <td className="py-2 px-4 border-r border-b">
-                    {teacher.subject}
-                  </td>
-                  <td className="py-2 px-4 border-r border-b">
-                    {teacher.email}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table> */}
           {loading ? (
             <div className="flex justify-center items-center h-full">
               <TransparentLoadingComponent />
             </div>
           ) : (
-            teachers.map((teacher, index) => (
+            students.map((student, index) => (
               <div
                 key={index}
                 className={`flex flex-col gap-5 mb-5 border-2 ${
-                  teacher.confirmed ? "border-solid" : "border-dashed"
+                  student.confirmed ? "border-solid" : "border-dashed"
                 } border-amber-200 rounded-xl w-full p-2`}
               >
                 <div className="flex items-center justify-between">
@@ -153,18 +127,18 @@ function ManageTeachers() {
                       className="rounded-full invert"
                     />
                     <div className="font-semibold">
-                      {teacher.firstName} {teacher.lastName}
+                      {student.firstName} {student.lastName}
                     </div>
                   </div>
-                  <div className="w-1/6 text-center">{teacher.branch}</div>
-                  <div className="w-1/6 text-center">{teacher.phone}</div>
-                  <div className="w-1/4 text-center">{teacher.email}</div>
+                  <div className="w-1/6 text-center">{student.branch}</div>
+                  <div className="w-1/6 text-center">{student.phone}</div>
+                  <div className="w-1/4 text-center">{student.email}</div>
                   <div className="w-1/6 flex gap-2 justify-center">
                     <Link
                       href={
-                        teacher?.uid
-                          ? `/admin-dashboard/manage-teachers/edit-teacher?uid=${encodeURIComponent(
-                              teacher?.uid
+                        student?.uid
+                          ? `/${environment}/manage-students/edit-student?uid=${encodeURIComponent(
+                              student?.uid
                             )}`
                           : "#"
                       }
@@ -172,7 +146,7 @@ function ManageTeachers() {
                       //   teacher?.uid
                       // )}`}
                       className={`text-white w-16 text-center p-2 rounded-lg ${
-                        teacher?.uid ? "bg-blue-400" : "bg-gray-500 text-black"
+                        student?.uid ? "bg-blue-400" : "bg-gray-500 text-black"
                       } `}
                     >
                       Edit
@@ -181,35 +155,35 @@ function ManageTeachers() {
                       onClick={() => {
                         console.log("dsds");
 
-                        if (teacher?.uid) {
-                          deleteDoc(doc(db, "users", teacher?.uid)).then(() => {
+                        if (student?.uid) {
+                          deleteDoc(doc(db, "users", student?.uid)).then(() => {
                             window.location.reload();
                             alert("Deleted Successfully");
                           });
 
                           deleteDoc(
-                            doc(db, "teacher-invitations", teacher.email)
+                            doc(db, "student-invitations", student.email)
                           ).then(() => {
                             // window.location.reload();
                           });
                         } else {
-                          // deleteDoc(doc(db, "users", teacher?.uid)).then(() => {
+                          // deleteDoc(doc(db, "users", student?.uid)).then(() => {
                           //   window.location.reload();
                           //   alert("Deleted Successfully");
                           // });
 
                           deleteDoc(
-                            doc(db, "teacher-invitations", teacher.email)
+                            doc(db, "student-invitations", student.email)
                           ).then(() => {
                             window.location.reload();
                           });
                         }
                       }}
                       className={`text-white cursor-pointer ${
-                        teacher?.uid ? "bg-red-500" : " bg-orange-500"
+                        student?.uid ? "bg-red-500" : " bg-orange-500"
                       } w-18 text-center p-2 rounded-lg`}
                     >
-                      {teacher?.uid ? "Delete" : "Revoke"}
+                      {student?.uid ? "Delete" : "Revoke"}
                     </div>
                   </div>
                 </div>
@@ -222,4 +196,4 @@ function ManageTeachers() {
   );
 }
 
-export default ManageTeachers;
+export default ManageStudents;

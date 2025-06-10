@@ -1,11 +1,11 @@
 "use client";
 import AdminLogin from "@/screens/admin-login";
-import StudentLogin from "@/screens/student-login";
 import TeacherLogin from "@/screens/teacher-login";
 import {useSearchParams} from "next/navigation";
 import {useRouter} from "next/navigation";
 import React from "react";
 import ProtectedRoute from "../../../utils/checkAuth";
+import {StudentLogin} from "@/screens/student-login";
 
 function Login() {
   const router = useRouter();
@@ -17,7 +17,8 @@ function Login() {
     return (
       <>
         <ProtectedRoute />
-        <StudentLogin />
+        <StudentLogin token={token} />
+        {/* <StudentLogin token={token} /> */}
       </>
     );
   } else if (type === "teacher") {

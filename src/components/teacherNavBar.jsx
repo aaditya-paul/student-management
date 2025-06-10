@@ -9,6 +9,9 @@ import Modal from "./modal";
 import {onAuthStateChanged, signOut} from "@firebase/auth";
 import {auth, db} from "../../firebaseConfig";
 import {doc, getDoc} from "firebase/firestore";
+import {FaClipboardList} from "react-icons/fa";
+import {PiTarget} from "react-icons/pi";
+
 function TeacherNavbar({children}) {
   const routes = [
     {
@@ -45,10 +48,36 @@ function TeacherNavbar({children}) {
         </svg>
       ),
     },
-
     {
-      name: "Profile",
-      path: "/teacher-dashboard/profile",
+      name: "Manage Timetable",
+      path: "/teacher-dashboard/manage-timetable",
+      svg: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="24px"
+          height="24px"
+        >
+          <path
+            fill="currentColor"
+            d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 16H5V10h14zm0-12H5V6h14zM9 14H7v-2h2zm4 0h-2v-2h2zm4 0h-2v-2h2zm-8 4H7v-2h2zm4 0h-2v-2h2zm4 0h-2v-2h2z"
+          ></path>
+        </svg>
+      ),
+    },
+    {
+      name: "Manage Attendance",
+      path: "/teacher-dashboard/manage-attendance",
+      svg: <FaClipboardList />,
+    },
+    {
+      name: "Manage Assignment",
+      path: "/teacher-dashboard/manage-assignment",
+      svg: <PiTarget />,
+    },
+    {
+      name: "Invitations",
+      path: "/teacher-dashboard/invitations",
       svg: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -65,11 +94,37 @@ function TeacherNavbar({children}) {
         </svg>
       ),
     },
+    {
+      name: "Profile",
+      path: "/teacher-dashboard/profile",
+      svg: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="24px"
+          height="24px"
+        >
+          <g
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+          >
+            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2"></path>
+            <path d="M4.271 18.346S6.5 15.5 12 15.5s7.73 2.846 7.73 2.846M12 12a3 3 0 1 0 0-6a3 3 0 0 0 0 6"></path>
+          </g>
+        </svg>
+      ),
+    },
+
     // {name: "Settings", path: "/admin-dashboard/settings"},
   ];
   const router = useRouter();
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const currentRoute = usePathname();
+  // TODO CHANGE THIS LATER TO MODULE
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {

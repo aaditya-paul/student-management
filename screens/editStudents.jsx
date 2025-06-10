@@ -1,18 +1,22 @@
 "use client";
 import Image from "next/image";
 import React, {useEffect, useState} from "react";
-import PFP from "../../../../../public/assets/user.png";
+import PFP from "../public/assets/user.png";
 import {
   TransparentLoadingComponent,
   TransparentLoadingScreen,
 } from "@/components/loadingScreen";
-import {doc, setDoc} from "@firebase/firestore";
-import {db} from "../../../../../firebaseConfig";
-import {useRouter} from "next/navigation";
-import {generateUID} from "../../../../../utils/uid-generator";
-import {fetchSubjects} from "../../../../../utils/fetchUserFunctions";
-import BRANCHES from "../../../../../branch.json";
-function AddTeacher() {
+import {doc, getDoc, setDoc} from "@firebase/firestore";
+import {db} from "../firebaseConfig";
+import BRANCHES from "../branch.json";
+import {useRouter, useSearchParams} from "next/navigation";
+function EditStudent({type}) {
+  if (type === "") {
+    throw new Error("Type is required");
+  } else if (type !== "admin" && type !== "teacher") {
+    throw new Error("Type must be either 'admin' or 'teacher'");
+  }
+
   const [imagePreview, setImagePreview] = useState(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -21,23 +25,32 @@ function AddTeacher() {
   const [branch, setBranch] = useState("");
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [subDropDown, setSubDropDown] = useState(false);
-  const [subjects, setSubjects] = useState([]);
-  const [selectedSubjects, setSelectedSubjects] = useState([]);
-  // const [subjects, setSubjects] = useState([]);
-  // const [showSubjectDropdown, setShowSubjectDropdown] = useState(false);
-
+  const [environment, setEnvironment] = useState();
   const router = useRouter();
-
+  // const emailQ = useSearchParams().get("email");
+  const uid = useSearchParams().get("uid");
   useEffect(() => {
-    const fetchSub = async () => {
-      fetchSubjects().then((data) => {
-        // console.log("Subjects fetched: ", data);
-        setSubjects(data);
-      });
-    };
-    fetchSub();
-  }, []);
+    if (type === "teacher") {
+      setEnvironment("teacher-dashboard");
+    } else if (type === "admin") {
+      setEnvironment("admin-dashboard");
+    }
+  }, [type]);
+  useEffect(() => {
+    // console.log("emailQ", emailQ);
+    getDoc(doc(db, "users", uid)).then((docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setFirstName(data.firstName);
+        setLastName(data.lastName);
+        setEmail(data.email);
+        setPhone(data.phone);
+        setBranch(data.branch);
+      } else {
+        console.log("No such document!");
+      }
+    });
+  }, [uid]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -73,21 +86,19 @@ function AddTeacher() {
     }
 
     setDoc(
-      doc(db, "teacher-invitations", email),
+      doc(db, "users", uid),
       {
         firstName: firstName,
         lastName: lastName,
         email: email,
         phone: phone,
         branch: branch,
-        confirmed: false,
-        subjects: selectedSubjects,
         // TODO add image to firebase storage and get the url
       },
       {merge: true}
     )
       .then(() => {
-        alert("Teacher added successfully.");
+        alert("Student added successfully.");
         setFirstName("");
         setLastName("");
         setEmail("");
@@ -96,28 +107,46 @@ function AddTeacher() {
         setImagePreview(null);
         setImage(null);
         setLoading(false);
-        setSelectedSubjects([]);
-        setSubDropDown(false);
-        router.push("/admin-dashboard/manage-teachers");
+        router.push(`/${environment}/manage-students`);
       })
       .catch((e) => {
         console.log(e);
-        alert("Error adding teacher. Please try again.");
+        alert("Error adding student. Please try again.");
         setLoading(false);
       })
       .finally(() => {
         setLoading(false);
       });
   };
-  if (loading || subjects.length === 0) {
-    return <TransparentLoadingComponent />;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <TransparentLoadingComponent />
+      </div>
+    );
   }
+
+  if (
+    uid === null ||
+    firstName === "" ||
+    lastName === "" ||
+    email === "" ||
+    phone === "" ||
+    branch === ""
+  ) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <TransparentLoadingScreen />
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="p-5 max-h-screen ">
         <div>
-          <h1 className="text-4xl font-bold  text-amber-300">Add Teacher.</h1>
-          <p className="text-sm">The admin can add teachers to the system.</p>
+          <h1 className="text-4xl font-bold  text-amber-300">Edit Student.</h1>
+          <p className="text-sm">The {type} can Edit students in the system.</p>
         </div>
         <div className=" flex md:flex-col-reverse lg:flex-row gap-5">
           <div className="flex flex-col gap-8 mt-12">
@@ -199,74 +228,16 @@ function AddTeacher() {
                   ))}
                 </select>
               </div>
-
               <div>
-                <div className="text-gray-400 text-xl font-semibold">
-                  Subjects
+                <div className="text-gray-400 text-xl  font-semibold p-4 bg-transparent">
+                  {/* Submit */}
                 </div>
-                <button
-                  onClick={() => {
-                    setSubDropDown(!subDropDown);
-                  }}
-                  className="outline-none cursor-pointer bg-[#090C15] p-3 text-gray-400 md:p-4 border-2 border-slate-700 rounded-lg mt-2 w-96"
+                <div
+                  onClick={handleSubmit}
+                  className="text-white w-96 text-xl cursor-pointer active:scale-95 transition-all ease-linear font-semibold p-4 rounded-lg text-center bg-[#D03035]"
                 >
-                  <div className="flex items-center justify-between">
-                    <span>
-                      {selectedSubjects.length > 0
-                        ? selectedSubjects.join(", ").toUpperCase()
-                        : "Choose Subjects"}
-                    </span>
-                    <span>▼</span>
-                  </div>
-                </button>
-                {subDropDown && (
-                  <div className="min-h-[100px] bg-gray-900 max-h-[200px] overflow-y-auto absolute w-96 mt-2 rounded-lg p-4">
-                    {subjects.length > 0 ? (
-                      <ul>
-                        {subjects.map((subject, index) => (
-                          <li
-                            key={index}
-                            className="p-2 hover:bg-gray-800 cursor-pointer"
-                            onClick={() => {
-                              if (selectedSubjects.includes(subject)) {
-                                setSelectedSubjects(
-                                  selectedSubjects.filter(
-                                    (sub) => sub !== subject
-                                  )
-                                );
-                              } else {
-                                setSelectedSubjects([
-                                  ...selectedSubjects,
-                                  subject,
-                                ]);
-                              }
-                            }}
-                          >
-                            <div className="flex items-center justify-between ">
-                              {subject.toUpperCase()}
-                              {selectedSubjects.includes(subject) && (
-                                <span className="ml-2 text-green-500">✓</span>
-                              )}
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <div className="p-2">No subjects found</div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-            <div>
-              <div className="text-gray-400 text-xl  font-semibold p-4 bg-transparent">
-                {/* Submit */}
-              </div>
-              <div
-                onClick={handleSubmit}
-                className="text-white w-96 text-xl cursor-pointer active:scale-95 transition-all ease-linear font-semibold p-4 rounded-lg text-center bg-[#D03035]"
-              >
-                Submit
+                  Submit
+                </div>
               </div>
             </div>
           </div>
@@ -314,4 +285,4 @@ function AddTeacher() {
   );
 }
 
-export default AddTeacher;
+export default EditStudent;

@@ -19,8 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "CCP Student Management System",
-  description: "A student management system for Central Calcutta Polytechnic",
+  title: "CCP Management System",
+  description: "A management system for Central Calcutta Polytechnic",
 };
 
 export default function RootLayout({children}) {

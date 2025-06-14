@@ -28,6 +28,7 @@ function TimetableSetter({
   timetable = null, // Parameter for pre-provided timetable
   branch = null, // Parameter for pre-provided branch
   sem = null, // Parameter for pre-provided semester
+  fullScreen = false,
 }) {
   // --- State Management ---
   // Remove internalTimetable if it's meant to directly reflect the prop
@@ -452,9 +453,11 @@ function TimetableSetter({
   }
 
   // Determine if inputs/buttons should be disabled
+
   const isDisabled = mode === "view";
   const isTeacherAccess = mode === "edit" && access === "teacher";
   const isAdminAccess = mode === "edit" && access === "admin";
+  const isStudentAccess = access === "student"; // New variable for student access
 
   return (
     <div className="flex flex-col min-h-screen p-5">
@@ -513,7 +516,7 @@ function TimetableSetter({
                 onClick={handleSaveTimetable}
                 className={`px-6 py-3 text-white font-semibold rounded-lg shadow-md transition-all duration-200 ease-in-out active:scale-95 ${
                   isDisabled
-                    ? "bg-gray-500 cursor-not-allowed"
+                    ? "bg-gray-500 cursor-not-allowed hidden"
                     : "bg-[#D03035] hover:bg-red-700"
                 }`}
                 disabled={isDisabled} // Disable for view mode
@@ -528,7 +531,11 @@ function TimetableSetter({
       {/* Display selected branch and semester if not admin or timetable prop is provided */}
       {(!isAdminAccess || timetable) &&
         (selectedBranch || selectedSemester) && (
-          <div className="mt-10 w-[70%] mx-auto justify-between  flex items-center">
+          <div
+            className={` ${
+              isDisabled ? "hidden" : ""
+            } mt-10 w-[70%] mx-auto justify-between  flex items-center`}
+          >
             <div className="text-center bg-[#1B1C21] basis-2/3 p-5 rounded-lg shadow-lg ">
               <p className="text-amber-300 text-xl font-semibold">
                 Timetable for:{" "}
@@ -541,7 +548,7 @@ function TimetableSetter({
                 onClick={handleSaveTimetable}
                 className={`px-6 py-3 text-white font-semibold rounded-lg shadow-md transition-all duration-200 ease-in-out active:scale-95 ${
                   isDisabled
-                    ? "bg-gray-500 cursor-not-allowed"
+                    ? "bg-gray-500 cursor-not-allowed hidden"
                     : "bg-[#D03035] hover:bg-red-700"
                 }`}
                 disabled={isDisabled} // Disable for view mode
@@ -554,12 +561,16 @@ function TimetableSetter({
 
       {/* Save Timetable button for teachers (if branch/sem are pre-selected) */}
       {!isAdminAccess && !timetable && (
-        <div className="mt-10 w-[70%] mx-auto bg-[#1B1C21] p-5 rounded-lg shadow-lg flex justify-end">
+        <div
+          className={` ${
+            isDisabled ? "hidden" : ""
+          } mt-10 w-[70%] mx-auto bg-[#1B1C21] p-5 rounded-lg shadow-lg flex justify-end`}
+        >
           <button
             onClick={handleSaveTimetable}
             className={`px-6 py-3 text-white font-semibold rounded-lg shadow-md transition-all duration-200 ease-in-out active:scale-95 ${
               isDisabled
-                ? "bg-gray-500 cursor-not-allowed"
+                ? "bg-gray-500 cursor-not-allowed hidden"
                 : "bg-[#D03035] hover:bg-red-700"
             }`}
             disabled={isDisabled} // Disable for view mode
@@ -592,7 +603,11 @@ function TimetableSetter({
       )}
 
       {/* Timetable Table */}
-      <div className="mt-2 flex-grow w-[80%] mx-auto h-fit  bg-[#1B1C21] p-5 rounded-lg shadow-lg overflow-x-auto">
+      <div
+        className={`mt-2 flex-grow ${
+          fullScreen ? "w-full h-full" : "w-[80%]"
+        } mx-auto h-fit  bg-[#1B1C21] p-5 rounded-lg shadow-lg overflow-x-auto`}
+      >
         {timeSlots.length > 0 && daysOfWeek.length > 0 ? (
           <table className="min-w-full divide-y divide-slate-700 border border-slate-700 rounded-lg overflow-hidden">
             <thead>
@@ -740,7 +755,7 @@ function TimetableSetter({
                   ) // Teachers only see their own name to select
                   .map((teacher) => (
                     <option key={teacher.uid} value={teacher.uid}>
-                      {teacher.firstName} {teacher.lastName}
+                      {teacher.firstName} {teacher.lastName} ({teacher.branch})
                     </option>
                   ))}
               </select>

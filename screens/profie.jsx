@@ -2,6 +2,7 @@ import React, {use, useEffect} from "react";
 import USERIMG from "../public/assets/user.png";
 import Image from "next/image";
 import Link from "next/link";
+import {addDesignationToSem} from "../utils/otherFunctions";
 function Profile({userData, type}) {
   //@param {Object} userData - The user data object containing user information.
   //@param {string} type - The type of user, e.g., "admin" or "teacher".
@@ -58,6 +59,15 @@ function Profile({userData, type}) {
                 </span>
               </div>
             )}
+            {type === "student" && (
+              <div className=" font-mono text-sm text-gray-400">
+                {" "}
+                Student at{" "}
+                <span className="text-blue-300">
+                  Central Calcutta Polytechnic
+                </span>
+              </div>
+            )}
             <div className=" font-mono text-xs text-gray-400">
               &#9432; UID : {userData?.uid}
             </div>
@@ -72,6 +82,30 @@ function Profile({userData, type}) {
                   {userData?.subjects && userData?.subjects.length > 0
                     ? userData?.subjects.join(", ").toUpperCase()
                     : " No Subjects Assigned"}
+                </span>
+              </div>
+            )}
+            {type === "student" && (
+              <div className="mt-5 text-xl">
+                <span className="font-bold ">Reg No. : </span>
+                <span className=" text-gray-300">
+                  {userData?.regNo || "No Reg No Assigned"}
+                </span>
+              </div>
+            )}
+            {type === "student" && (
+              <div className="mt-5 text-xl">
+                <span className="font-bold ">Semester: </span>
+                <span className=" text-gray-300">
+                  {userData?.semester && (
+                    <>
+                      {
+                        addDesignationToSem(userData?.semester.toString())
+                          .inMixed
+                      }
+                    </>
+                  )}
+                  {/* {userData?.semester || "No Semester No Assigned"} */}
                 </span>
               </div>
             )}

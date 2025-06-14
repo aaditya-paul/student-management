@@ -55,8 +55,6 @@ function AdminLogin() {
               "Friday",
               "Saturday",
             ],
-            subjects: ["Maths"],
-            timetable: [],
           },
           {merge: true}
         );

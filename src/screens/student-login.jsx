@@ -109,23 +109,26 @@ export function StudentLogin({token}) {
       }
 
       const data = docSnap.data();
-
-      // Save to users collection
-      await setDoc(
-        doc(db, "users", user.uid),
-        {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email,
-          phone: data.phone,
-          branch: data.branch,
-          image: data?.image || null,
-          uid: user.uid,
-          type: "student",
-          confirmed: true,
-        },
-        {merge: true}
-      );
+      if (!data.confirmed) {
+        // Save to users collection
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email,
+            phone: data.phone,
+            branch: data.branch,
+            image: data?.image || null,
+            uid: user.uid,
+            type: "student",
+            confirmed: true,
+            regNo: data.regNo,
+            semester: data.semester,
+          },
+          {merge: true}
+        );
+      }
 
       await setDoc(
         doc(db, "student-invitations", email),

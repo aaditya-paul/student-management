@@ -5,7 +5,7 @@ import {
 } from "@firebase/auth";
 import React, {useEffect, useState} from "react";
 import {auth, db} from "../../firebaseConfig";
-import {doc, getDoc, setDoc} from "@firebase/firestore";
+import {arrayUnion, doc, getDoc, setDoc} from "@firebase/firestore";
 import {useRouter} from "next/navigation";
 import {TransparentLoadingComponent} from "@/components/loadingScreen";
 
@@ -109,24 +109,25 @@ function TeacherLogin({token}) {
       }
 
       const data = docSnap.data();
-
       // Save to users collection
-      await setDoc(
-        doc(db, "users", user.uid),
-        {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email,
-          phone: data.phone,
-          branch: data.branch,
-          image: data?.image || null,
-          uid: user.uid,
-          type: "teacher",
-          confirmed: true,
-        },
-        {merge: true}
-      );
-
+      if (!data.confirmed) {
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email,
+            phone: data.phone,
+            branch: data.branch,
+            image: data?.image || null,
+            uid: user.uid,
+            type: "teacher",
+            confirmed: true,
+            subjects: data.subjects || [], // Assuming subjects is part of the invitation data
+          },
+          {merge: true}
+        );
+      }
       await setDoc(
         doc(db, "teacher-invitations", email),
         {
@@ -134,7 +135,7 @@ function TeacherLogin({token}) {
           uid: user.uid,
         },
         {merge: true}
-      );
+      ).then(() => {});
 
       router.push("/redirect");
       setLoading(false);

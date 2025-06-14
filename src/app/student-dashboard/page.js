@@ -10,7 +10,7 @@ import LoadingScreen, {
 import {IoOpenOutline} from "react-icons/io5";
 import Link from "next/link";
 
-function TeacherDashboard() {
+function StudentDashboard() {
   const [loading, setLoading] = React.useState(true);
   const router = useRouter();
   const [currentTime, setCurrentTime] = React.useState(null);
@@ -34,7 +34,7 @@ function TeacherDashboard() {
             // Perform any actions you need with the user data
           } else {
             // console.log("No such document!");
-            router.push("/teacher/details?uid=" + user.uid);
+            router.push("/student/details?uid=" + user.uid);
           }
         });
         // Perform any actions you need with the authenticated user
@@ -68,7 +68,7 @@ function TeacherDashboard() {
       <div className="flex flex-col gap-2 mt-10">
         <div className=" flex  gap-5">
           <Link
-            href={`/teacher-dashboard/profile`}
+            href={`/student-dashboard/profile`}
             className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
           >
             <div className="text-xl font-semibold">Profile Summary</div>
@@ -84,7 +84,7 @@ function TeacherDashboard() {
             </div>
           </Link>
           <Link
-            href={`/teacher-dashboard/manage-timetable`}
+            href={`/student-dashboard/view-timetable`}
             className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
           >
             <div className="text-xl font-semibold">View Timetable</div>
@@ -102,19 +102,10 @@ function TeacherDashboard() {
         </div>
         <div className=" flex  gap-5">
           <Link
-            href={`/teacher-dashboard/manage-students`}
+            href={`/student-dashboard/view-attendance`}
             className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
           >
-            <div className="text-xl font-semibold">Manage Students</div>
-            <div className=" text-3xl text-amber-300 font-ubuntu">
-              {<IoOpenOutline />}
-            </div>
-          </Link>
-          <Link
-            href={`/teacher-dashboard/manage-attendance`}
-            className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
-          >
-            <div className="text-xl font-semibold">Manage Attendance</div>
+            <div className="text-xl font-semibold">View Attendance</div>
             <div className=" text-3xl text-amber-300 font-ubuntu">
               {/* {teacher.length ? (
                 teacher.length
@@ -132,4 +123,4 @@ function TeacherDashboard() {
   );
 }
 
-export default TeacherDashboard;
+export default StudentDashboard;

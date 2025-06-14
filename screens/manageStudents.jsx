@@ -7,6 +7,7 @@ import {collection, deleteDoc, doc, getDoc, getDocs} from "@firebase/firestore";
 import {db} from "../firebaseConfig";
 import Modal from "@/components/modal";
 import {TransparentLoadingComponent} from "@/components/loadingScreen";
+import {addDesignationToSem} from "../utils/otherFunctions";
 
 function ManageStudents({type}) {
   const [environment, setEnvironment] = React.useState(type);
@@ -133,6 +134,22 @@ function ManageStudents({type}) {
                   <div className="w-1/6 text-center">{student.branch}</div>
                   <div className="w-1/6 text-center">{student.phone}</div>
                   <div className="w-1/4 text-center">{student.email}</div>
+                  <div className="w-1/4 text-center">
+                    {student?.semester}
+
+                    {student?.semester && (
+                      <span className="">
+                        {
+                          addDesignationToSem(student?.semester.toString())
+                            .inShort
+                        }{" "}
+                        semester
+                      </span>
+                    )}
+                  </div>
+                  <div className="w-1/4 text-center">
+                    {student.regNo.toUpperCase()}
+                  </div>
                   <div className="w-1/6 flex gap-2 justify-center">
                     <Link
                       href={

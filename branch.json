@@ -3,8 +3,5 @@
   {"value": "ECE", "label": "Electronics (ECE)"},
   {"value": "ME", "label": "Mechanical (ME)"},
   {"value": "CE", "label": "Civil (CE)"},
-  {"value": "EE", "label": "Electrical (EE)"},
-  {"value": "Math", "label": "Mathematics"},
-  {"value": "Physics", "label": "Physics"},
-  {"value": "Chemistry", "label": "Chemistry"}
+  {"value": "EE", "label": "Electrical (EE)"}
 ]

@@ -14,7 +14,7 @@ import BRANCHES from "../branch.json";
 function EditTeacher({type}) {
   if (type === "") {
     throw new Error("Type is required");
-  } else if (type !== "admin" && type !== "teacher") {
+  } else if (type !== "admin" && type !== "teacher" && type !== "student") {
     throw new Error("Type must be either 'admin' or 'teacher'");
   }
   const [imagePreview, setImagePreview] = useState(null);
@@ -39,6 +39,8 @@ function EditTeacher({type}) {
       setEnvironment("teacher-dashboard");
     } else if (type === "admin") {
       setEnvironment("admin-dashboard");
+    } else if (type === "student") {
+      setEnvironment("student-dashboard");
     }
   }, [type]);
 

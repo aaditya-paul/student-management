@@ -28,6 +28,9 @@ function AddStudents({environment}) {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [envURL, setEnvURL] = useState("");
+  const [regNo, setRegNo] = useState("");
+  const [semester, setSemester] = useState("");
+
   const router = useRouter();
 
   useEffect(() => {
@@ -51,7 +54,15 @@ function AddStudents({environment}) {
     setLoading(true);
 
     const formData = new FormData();
-    if (!firstName || !lastName || !email || !phone || !branch) {
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !phone ||
+      !branch ||
+      !regNo ||
+      !semester
+    ) {
       alert("Please fill in all the fields except the image.");
       setLoading(false);
       return;
@@ -80,6 +91,8 @@ function AddStudents({environment}) {
         phone: phone,
         branch: branch,
         confirmed: false,
+        regNo: regNo,
+        semester: semester,
         // TODO add image to firebase storage and get the url
       },
       {merge: true}
@@ -94,6 +107,8 @@ function AddStudents({environment}) {
         setImagePreview(null);
         setImage(null);
         setLoading(false);
+        setRegNo("");
+        setSemester("");
         router.push(`/${envURL}/manage-students`);
       })
       .catch((e) => {
@@ -195,8 +210,47 @@ function AddStudents({environment}) {
                   ))}
                 </select>
               </div>
+              <div className="  flex md:flex-col lg:flex-row gap-5">
+                <div>
+                  <div className=" text-gray-400 text-xl font-semibold">
+                    Registration Number
+                  </div>
+                  <input
+                    type="text"
+                    className=" outline-none p-3 md:p-4 border-2 border-slate-700 rounded-lg mt-2 w-96"
+                    placeholder="D232407598"
+                    value={regNo}
+                    onChange={(e) => setRegNo(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex md:flex-col  gap-5 ">
               <div>
-                <div className="text-gray-400 text-xl  font-semibold p-4 bg-transparent">
+                <div className="text-gray-400 text-xl font-semibold">
+                  Semester
+                </div>
+                <select
+                  value={semester}
+                  onChange={(e) => setSemester(e.target.value)}
+                  className="outline-none bg-[#090C15] p-3 text-gray-400 md:p-4 border-2 border-slate-700 rounded-lg mt-2 w-96"
+                >
+                  <option value="">Select Semester</option>
+                  <option value="1">1st Semester</option>
+                  <option value="2">2nd Semester</option>
+                  <option value="3">3rd Semester</option>
+                  <option value="4">4th Semester</option>
+                  <option value="5">5th Semester</option>
+                  <option value="6">6th Semester</option>
+                  {/* {BRANCHES.map((branch, index) => (
+                      <option key={index} value={branch.value}>
+                        {branch.label}
+                      </option>
+                    ))} */}
+                </select>
+              </div>
+              <div>
+                <div className="text-gray-400 text-xl  font-semibold p-4 pb-0 bg-transparent">
                   {/* Submit */}
                 </div>
                 <div

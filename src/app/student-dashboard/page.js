@@ -9,6 +9,7 @@ import LoadingScreen, {
 } from "@/components/loadingScreen";
 import {IoOpenOutline} from "react-icons/io5";
 import Link from "next/link";
+import NoticeBoard from "@/components/noticeBoard";
 
 function StudentDashboard() {
   const [loading, setLoading] = React.useState(true);
@@ -65,58 +66,70 @@ function StudentDashboard() {
           {userData?.firstName} {userData?.lastName}.
         </span>
       </div>
-      <div className="flex flex-col gap-2 mt-10">
-        <div className=" flex  gap-5">
-          <Link
-            href={`/student-dashboard/profile`}
-            className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
-          >
-            <div className="text-xl font-semibold">Profile Summary</div>
-            <div className=" text-3xl text-amber-300 font-ubuntu">
-              {/* {student.length ? (
+      <div className="flex justify-between">
+        <div className="flex flex-1 flex-col gap-2 mt-10">
+          <div className=" flex  gap-5">
+            <Link
+              href={`/student-dashboard/profile`}
+              className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
+            >
+              <div className="text-xl font-semibold">Profile Summary</div>
+              <div className=" text-3xl text-amber-300 font-ubuntu">
+                {/* {student.length ? (
                 student.length
               ) : (
                 <span className=" font-mono text-lg text-amber-300/50">
                   Please Wait.
                 </span>
               )} */}
-              {<IoOpenOutline />}
-            </div>
-          </Link>
-          <Link
-            href={`/student-dashboard/view-timetable`}
-            className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
-          >
-            <div className="text-xl font-semibold">View Timetable</div>
-            <div className=" text-3xl text-amber-300 font-ubuntu">
-              {/* {teacher.length ? (
+                {<IoOpenOutline />}
+              </div>
+            </Link>
+            <Link
+              href={`/student-dashboard/view-timetable`}
+              className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
+            >
+              <div className="text-xl font-semibold">View Timetable</div>
+              <div className=" text-3xl text-amber-300 font-ubuntu">
+                {/* {teacher.length ? (
                 teacher.length
               ) : (
                 <span className=" font-mono text-lg text-amber-300/50">
                   Please Wait.
                 </span>
               )} */}
-              {<IoOpenOutline />}
-            </div>
-          </Link>
+                {<IoOpenOutline />}
+              </div>
+            </Link>
+          </div>
+          <div className=" flex  gap-5">
+            <Link
+              href={`/student-dashboard/view-attendance`}
+              className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
+            >
+              <div className="text-xl font-semibold">View Attendance</div>
+              <div className=" text-3xl text-amber-300 font-ubuntu">
+                {/* {teacher.length ? (
+                teacher.length
+              ) : (
+                <span className=" font-mono text-lg text-amber-300/50">
+                  Please Wait.
+                </span>
+              )} */}
+                {<IoOpenOutline />}
+              </div>
+            </Link>
+          </div>
         </div>
-        <div className=" flex  gap-5">
-          <Link
-            href={`/student-dashboard/view-attendance`}
-            className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
-          >
-            <div className="text-xl font-semibold">View Attendance</div>
-            <div className=" text-3xl text-amber-300 font-ubuntu">
-              {/* {teacher.length ? (
-                teacher.length
-              ) : (
-                <span className=" font-mono text-lg text-amber-300/50">
-                  Please Wait.
-                </span>
-              )} */}
-              {<IoOpenOutline />}
-            </div>
-          </Link>
+
+        <div className="absolute right-0 top-0 h-screen w-[30%] p-5 mx-5 ">
+          {/* notice */}
+          <NoticeBoard
+            currentUserUid={userData.uid}
+            access={userData.type}
+            currentUserFirstName={userData.firstName}
+            currentUserLastName={userData.lastName}
+          />
         </div>
       </div>
     </div>

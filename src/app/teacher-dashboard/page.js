@@ -9,6 +9,7 @@ import LoadingScreen, {
 } from "@/components/loadingScreen";
 import {IoOpenOutline} from "react-icons/io5";
 import Link from "next/link";
+import NoticeBoard from "@/components/noticeBoard";
 
 function TeacherDashboard() {
   const [loading, setLoading] = React.useState(true);
@@ -65,67 +66,79 @@ function TeacherDashboard() {
           {userData?.firstName} {userData?.lastName}.
         </span>
       </div>
-      <div className="flex flex-col gap-2 mt-10">
-        <div className=" flex  gap-5">
-          <Link
-            href={`/teacher-dashboard/profile`}
-            className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
-          >
-            <div className="text-xl font-semibold">Profile Summary</div>
-            <div className=" text-3xl text-amber-300 font-ubuntu">
-              {/* {student.length ? (
+      {/* main shit */}
+      <div className="flex justify-between">
+        <div className=" basis-[90%] flex flex-col gap-2 mt-10">
+          <div className=" flex  gap-5">
+            <Link
+              href={`/teacher-dashboard/profile`}
+              className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
+            >
+              <div className="text-xl font-semibold">Profile Summary</div>
+              <div className=" text-3xl text-amber-300 font-ubuntu">
+                {/* {student.length ? (
                 student.length
               ) : (
                 <span className=" font-mono text-lg text-amber-300/50">
                   Please Wait.
                 </span>
               )} */}
-              {<IoOpenOutline />}
-            </div>
-          </Link>
-          <Link
-            href={`/teacher-dashboard/manage-timetable`}
-            className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
-          >
-            <div className="text-xl font-semibold">View Timetable</div>
-            <div className=" text-3xl text-amber-300 font-ubuntu">
-              {/* {teacher.length ? (
+                {<IoOpenOutline />}
+              </div>
+            </Link>
+            <Link
+              href={`/teacher-dashboard/manage-timetable`}
+              className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
+            >
+              <div className="text-xl font-semibold">View Timetable</div>
+              <div className=" text-3xl text-amber-300 font-ubuntu">
+                {/* {teacher.length ? (
                 teacher.length
               ) : (
                 <span className=" font-mono text-lg text-amber-300/50">
                   Please Wait.
                 </span>
               )} */}
-              {<IoOpenOutline />}
-            </div>
-          </Link>
+                {<IoOpenOutline />}
+              </div>
+            </Link>
+          </div>
+          <div className=" flex  gap-5">
+            <Link
+              href={`/teacher-dashboard/manage-students`}
+              className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
+            >
+              <div className="text-xl font-semibold">Manage Students</div>
+              <div className=" text-3xl text-amber-300 font-ubuntu">
+                {<IoOpenOutline />}
+              </div>
+            </Link>
+            <Link
+              href={`/teacher-dashboard/manage-attendance`}
+              className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
+            >
+              <div className="text-xl font-semibold">Manage Attendance</div>
+              <div className=" text-3xl text-amber-300 font-ubuntu">
+                {/* {teacher.length ? (
+                teacher.length
+              ) : (
+                <span className=" font-mono text-lg text-amber-300/50">
+                  Please Wait.
+                </span>
+              )} */}
+                {<IoOpenOutline />}
+              </div>
+            </Link>
+          </div>
         </div>
-        <div className=" flex  gap-5">
-          <Link
-            href={`/teacher-dashboard/manage-students`}
-            className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
-          >
-            <div className="text-xl font-semibold">Manage Students</div>
-            <div className=" text-3xl text-amber-300 font-ubuntu">
-              {<IoOpenOutline />}
-            </div>
-          </Link>
-          <Link
-            href={`/teacher-dashboard/manage-attendance`}
-            className="flex cursor-pointer hover:scale-105 transition-all ease-linear flex-col gap-5 bg-white/10 p-5 rounded-lg mt-5 w-[30%] h-[200px] "
-          >
-            <div className="text-xl font-semibold">Manage Attendance</div>
-            <div className=" text-3xl text-amber-300 font-ubuntu">
-              {/* {teacher.length ? (
-                teacher.length
-              ) : (
-                <span className=" font-mono text-lg text-amber-300/50">
-                  Please Wait.
-                </span>
-              )} */}
-              {<IoOpenOutline />}
-            </div>
-          </Link>
+        <div className="absolute right-0 top-0 h-screen w-[30%] p-5 mx-5 ">
+          {/* notice */}
+          <NoticeBoard
+            currentUserUid={userData.uid}
+            access={userData.type}
+            currentUserFirstName={userData.firstName}
+            currentUserLastName={userData.lastName}
+          />
         </div>
       </div>
     </div>

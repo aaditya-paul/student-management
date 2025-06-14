@@ -9,6 +9,8 @@ import Modal from "./modal";
 import {onAuthStateChanged, signOut} from "@firebase/auth";
 import {auth, db} from "../../firebaseConfig";
 import {doc, getDoc} from "firebase/firestore";
+import {MdChat} from "react-icons/md";
+
 function AdminNavBar({children}) {
   const routes = [
     {
@@ -83,6 +85,11 @@ function AdminNavBar({children}) {
           ></path>
         </svg>
       ),
+    },
+    {
+      name: "Chat",
+      path: "/admin-dashboard/chat",
+      svg: <MdChat />,
     },
     {
       name: "Invitations",

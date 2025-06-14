@@ -11,6 +11,7 @@ import {auth, db} from "../../firebaseConfig";
 import {doc, getDoc} from "firebase/firestore";
 import {FaClipboardList} from "react-icons/fa";
 import {PiTarget} from "react-icons/pi";
+import {MdChat} from "react-icons/md";
 
 function TeacherNavbar({children}) {
   const routes = [
@@ -75,6 +76,11 @@ function TeacherNavbar({children}) {
     //   path: "/teacher-dashboard/manage-assignment",
     //   svg: <PiTarget />,
     // },
+    {
+      name: "Chat",
+      path: "/teacher-dashboard/chat",
+      svg: <MdChat />,
+    },
     {
       name: "Invitations",
       path: "/teacher-dashboard/invitations",

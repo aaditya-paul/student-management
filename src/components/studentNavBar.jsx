@@ -11,6 +11,7 @@ import {auth, db} from "../../firebaseConfig";
 import {doc, getDoc} from "firebase/firestore";
 import {FaClipboardList} from "react-icons/fa";
 import {PiTarget} from "react-icons/pi";
+import {MdChat} from "react-icons/md";
 
 function StudentNavbar({children}) {
   const routes = [
@@ -30,6 +31,11 @@ function StudentNavbar({children}) {
           />
         </svg>
       ),
+    },
+    {
+      name: "Chat",
+      path: "/student-dashboard/chat",
+      svg: <MdChat />,
     },
     // {
     //   name: "Manage Students",

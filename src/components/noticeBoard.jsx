@@ -158,7 +158,7 @@ function NoticeBoard({
                   className={`p-4 rounded-lg shadow-md relative ${
                     // 'relative' for absolute positioning of delete button
                     notice.createdByRole === "admin"
-                      ? "bg-orange-600" // Admin notices: Orange
+                      ? "bg-orange-500" // Admin notices: Orange
                       : "bg-yellow-500 text-gray-900" // Teacher notices: Yellow
                   }`}
                 >
@@ -185,7 +185,8 @@ function NoticeBoard({
                           notice.createdByRole
                         )
                       }
-                      className="absolute top-2 right-2 px-3 py-1 bg-red-700 text-white text-xs rounded-full hover:bg-red-800 transition-colors"
+                      className="absolute top-2 right-2 px-3 py-1 bg-red-700 text-white text-xs rounded-md cursor-pointer
+                       hover:bg-red-800 transition-colors"
                       title="Delete this notice"
                     >
                       Delete

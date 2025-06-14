@@ -4,7 +4,7 @@
 import React, {useState, useEffect} from "react";
 
 import {TransparentLoadingComponent} from "@/components/loadingScreen";
-import AttendanceManager from "../../../../components/AttendanceManager"; // Adjust path as needed
+import AttendanceManager from "../../../../components/attendanceManager"; // Adjust path as needed
 import {
   fetchUser,
   fetchUserData,

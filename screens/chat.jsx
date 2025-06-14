@@ -1,6 +1,6 @@
 // Example usage in a parent component (e.g., app/chat/page.jsx)
 // You would fetch user data and pass it here.
-import ChatBox from "@/components/ChatBox"; // Adjust path
+import ChatBox from "@/components/chatBox"; // Adjust path
 import {fetchUser, fetchUserData} from "../utils/fetchUserFunctions"; // Your user utility functions
 import {TransparentLoadingComponent} from "@/components/loadingScreen";
 import React, {useState, useEffect} from "react";

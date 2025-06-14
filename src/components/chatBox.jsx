@@ -136,14 +136,14 @@ function ChatBox({
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-900">
+      <div className="flex justify-center items-center h-screen ">
         <TransparentLoadingComponent />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-screen p-5 bg-gray-900 text-white">
+    <div className="flex flex-col h-screen p-5  text-white  ">
       <div className="flex-grow flex flex-col w-[90%] mx-auto bg-[#1B1C21] p-5 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-amber-300 mb-6 text-center">
           Global Chat

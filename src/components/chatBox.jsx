@@ -144,7 +144,7 @@ function ChatBox({
 
   return (
     <div className="flex flex-col h-screen p-5  text-white  ">
-      <div className="flex-grow flex flex-col w-[90%] mx-auto bg-[#1B1C21] p-5 rounded-lg shadow-lg">
+      <div className="flex-grow flex flex-col w-[90%] h-[70%] mx-auto bg-[#1B1C21] p-5 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-amber-300 mb-6 text-center">
           Global Chat
         </h2>

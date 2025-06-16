@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "CCP Management System",
+  title: "Studiom",
   description: "A management system for Central Calcutta Polytechnic",
 };
 
